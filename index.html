@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dumbness Meter</title>
+  <script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+  ></script>
+  <script type="text/javascript">
+    (function () {
+      emailjs.init({
+        publicKey: "HDmxwiYPqQKJLnQty",
+      });
+    })();
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #222;
+      color: white;
+      margin-top: 50px;
+    }
+    .meter {
+      width: 300px;
+      height: 150px;
+      border-radius: 300px 300px 0 0;
+      background: linear-gradient(to top, #333, #111);
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+    .needle {
+      width: 4px;
+      height: 140px;
+      background: red;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: rotate(0deg);
+      transition: transform 0.5s ease-out;
+    }
+    #question {
+      margin: 20px;
+      font-size: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    .yes {
+      background: green;
+      color: white;
+    }
+    .no {
+      background: crimson;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dumbness Meter</h1>
+  <div class="meter">
+    <div class="needle" id="needle"></div>
+  </div>
+  <form id="answers-form">
+    <p id="question"></p>
+    <div id="buttonSection">
+      <button type="button" class="yes" onclick="answer('Yes')">Yes</button>
+      <button type="button" class="no" onclick="answer('No')">No</button>
+    </div>
+  </form>
+
+  <script>
+    const EMAILJS_SERVICE_ID = 'service_dekrwxi';
+    const EMAILJS_TEMPLATE_ID = 'template_lb8picg';
+
+    const questions = [
+      "You love me?",
+      "You've never seen a person like me before?",
+      "I'm all that you're looking for?",
+      "You want to kiss me?",
+      "You want to travel with me?",
+      "You have wished that I should had met you even before?",
+      "You like to mirror my personality?",
+      "You want to see me happy?",
+      "You don't like it when I lose?",
+      "If I'm not wrong you're afraid of me?"
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let answers = [];
+
+    function showQuestion() {
+      if (currentQ < questions.length) {
+        document.getElementById("question").innerText = questions[currentQ];
+      } else {
+        document.getElementById("question").innerText = "Your Dumbness Score: " + score;
+        document.getElementById("buttonSection").innerHTML = ""; // Remove buttons
+
+        // Send email with answers via EmailJS
+        sendResultsEmail();
+      }
+    }
+
+    function answer(option) {
+      answers.push(option);
+      if (option === "No") {
+        score += 10;
+        rotateNeedle(score);
+      }
+      currentQ++;
+      showQuestion();
+    }
+
+    function rotateNeedle(points) {
+      // 0 to 100 scale → rotation from 0° to 180°
+      let angle = (points / 100) * 180;
+      document.getElementById("needle").style.transform = "rotate(" + angle + "deg)";
+    }
+
+    function sendResultsEmail() {
+      const templateParams = {
+        to_email: "sriramojurakesh040@gmail.com",
+        score: score,
+        answer1: answers[0],
+        answer2: answers[1],
+        answer3: answers[2],
+        answer4: answers[3],
+        answer5: answers[4],
+        answer6: answers[5],
+        answer7: answers[6],
+        answer8: answers[7],
+        answer9: answers[8],
+        answer10: answers[9]
+      };
+
+      emailjs
+        .send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(
+          function (response) {
+            alert("Answers sent to email!");
+          },
+          function (error) {
+            alert("Failed to send email: " + JSON.stringify(error));
+          }
+        );
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
